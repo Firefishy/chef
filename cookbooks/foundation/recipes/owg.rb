@@ -32,7 +32,7 @@ end
 
 git "/srv/operations.osmfoundation.org" do
   action :sync
-  repository "git://github.com/openstreetmap/owg-website.git"
+  repository "https://github.com/openstreetmap/owg-website.git"
   depth 1
   user "root"
   group "root"
