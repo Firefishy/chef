@@ -10,206 +10,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  kitchen-requirements:
+    name: Check Kitchen Requirements
+    runs-on: ubuntu-latest
+    outputs:
+      requirements: ${{ steps.requirements.outputs.requirements }}
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v5
+    - name: Setup ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+    - name: Run kitchen list
+      id: requirements
+      run: |
+        bundle exec kitchen list --json | jq 'map(del(.last_action, .last_error))' | tee matrix.json
+        echo "requirements=$(jq -c . matrix.json)" >> "$GITHUB_OUTPUT"
+
   kitchen:
     name: Test Kitchen
     runs-on: ubuntu-latest
+    needs: kitchen-requirements
     permissions:
       packages: read
     strategy:
       matrix:
-        suite:
-          - accounts
-          - apache
-          - apt
-          - apt-repository
-          - awscli
-          - backup
-          - bind
-          - blog
-          - blogs
-          - chef
-          - civicrm
-          - clamav
-          - community
-          - db-backup
-          - db-base
-          - db-master
-          - db-slave
-          - dev
-          - devices
-          - dhcpd
-          - dmca
-          - dns
-          - docker
-          - elasticsearch
-          - exim
-          - fail2ban
-          - foundation-birthday
-          - foundation-board
-          - foundation-dwg
-          - foundation-mastodon
-          - foundation-mwg
-          - foundation-owg
-          - foundation-welcome
-          - foundation-wiki
-          - ftp
-          - geodns
-          - geoipupdate
-          - git
-          - git-server
-          - git-web
-          - gps-tile
-          - hardware
-          - hot
-          - ideditor
-          - imagery-tiler
-          - irc
-          - kibana
-          - letsencrypt
-          - mail
-          - mailman
-          - matomo
-          - memcached
-          - mysql
-          - networking
-          - nginx
-          - nodejs
-          - nominatim
-          - ntp
-          - openssh
-          - osmosis
-          - osqa
-          - otrs
-          - overpass
-          - passenger
-          - php
-          - php-apache
-          - php-fpm
-          - planet
-          - planet-aws
-          - planet-current
-          - planet-dump
-          - planet-notes
-          - planet-replication
-          - postgresql
-          - prometheus
-          - prometheus-server
-          - python
-          - rsyncd
-          - serverinfo
-          - snmpd
-          - spamassassin
-          - ssl
-          - stateofthemap-container
-          - stateofthemap-wordpress
-          - subversion
-          - supybot
-          - switch2osm
-          - sysctl
-          - sysfs
-          - taginfo
-          - tile
-          - tilelog
-          - tools
-          - trac
-          - vectortile
-          - web-cgimap
-          - web-frontend
-          - web-rails
-          - wiki
-          - wordpress
-        os:
-          - debian-12
-        exclude:
-          - suite: mailman
-            os: debian-12
-        include:
-          - suite: blog
-            os: ubuntu-2004
-          - suite: mailman
-            os: ubuntu-2004
-          - suite: stateofthemap-wordpress
-            os: ubuntu-2004
-          - suite: wordpress
-            os: ubuntu-2004
-          - suite: accounts
-            os: ubuntu-2204
-          - suite: apache
-            os: ubuntu-2204
-          - suite: apt
-            os: ubuntu-2204
-          - suite: backup
-            os: ubuntu-2204
-          - suite: bind
-            os: ubuntu-2204
-          - suite: chef
-            os: ubuntu-2204
-          - suite: clamav
-            os: ubuntu-2204
-          - suite: db-backup
-            os: ubuntu-2204
-          - suite: db-base
-            os: ubuntu-2204
-          - suite: db-master
-            os: ubuntu-2204
-          - suite: db-slave
-            os: ubuntu-2204
-          - suite: devices
-            os: ubuntu-2204
-          - suite: dhcpd
-            os: ubuntu-2204
-          - suite: exim
-            os: ubuntu-2204
-          - suite: fail2ban
-            os: ubuntu-2204
-          - suite: geodns
-            os: ubuntu-2204
-          - suite: geoipupdate
-            os: ubuntu-2204
-          - suite: git
-            os: ubuntu-2204
-          - suite: hardware
-            os: ubuntu-2204
-          - suite: networking
-            os: ubuntu-2204
-          - suite: ntp
-            os: ubuntu-2204
-          - suite: openssh
-            os: ubuntu-2204
-          - suite: osmosis
-            os: ubuntu-2204
-          - suite: planet
-            os: ubuntu-2204
-          - suite: planet-aws
-            os: ubuntu-2204
-          - suite: planet-dump
-            os: ubuntu-2204
-          - suite: planet-notes
-            os: ubuntu-2204
-          - suite: planet-replication
-            os: ubuntu-2204
-          - suite: postgresql
-            os: ubuntu-2204
-          - suite: prometheus
-            os: ubuntu-2204
-          - suite: python
-            os: ubuntu-2204
-          - suite: rsyncd
-            os: ubuntu-2204
-          - suite: spamassassin
-            os: ubuntu-2204
-          - suite: ssl
-            os: ubuntu-2204
-          - suite: sysctl
-            os: ubuntu-2204
-          - suite: sysfs
-            os: ubuntu-2204
-          - suite: tilelog
-            os: ubuntu-2204
-          - suite: tools
-            os: ubuntu-2204
+        include: ${{ fromJson(needs.kitchen-requirements.outputs.requirements) }}
       fail-fast: false
     steps:
+    - name: Test Kitchen Info
+      run: |
+        echo "Instance:    ${{ matrix.instance }}"
+        echo "Driver:      ${{ matrix.driver }}"
+        echo "Provisioner: ${{ matrix.provisioner }}"
+        echo "Verifier:    ${{ matrix.verifier }}"
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
@@ -222,11 +57,11 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         bundler-cache: true
-    - name: Run kitchen test ${{ matrix.suite }}-${{ matrix.os }}
-      run: bundle exec kitchen test ${{ matrix.suite }}-${{ matrix.os }}
+    - name: Run kitchen test ${{ matrix.instance }}
+      run: bundle exec kitchen test ${{ matrix.instance }}
     - name: Gather journal output
       run: |
-        bundle exec kitchen exec ${{ matrix.suite }}-${{ matrix.os }} -c "journalctl --since=yesterday"
-        bundle exec kitchen exec ${{ matrix.suite }}-${{ matrix.os }} -c "networkctl status --all"
-        bundle exec kitchen exec ${{ matrix.suite }}-${{ matrix.os }} -c "resolvectl status" || true
+        bundle exec kitchen exec ${{ matrix.instance }} -c "journalctl --since=yesterday"
+        bundle exec kitchen exec ${{ matrix.instance }} -c "networkctl status --all"
+        bundle exec kitchen exec ${{ matrix.instance }} -c "resolvectl status" || true
       if: ${{ failure() }}
