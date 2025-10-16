@@ -87,12 +87,16 @@ suites:
   - name: apt-repository
     run_list:
       - recipe[apt::repository]
+    includes:
+      - debian-12
   - name: awscli
     run_list:
       - recipe[awscli::default]
   - name: backup
     run_list:
       - recipe[backup::default]
+    excludes:
+      - ubuntu-20.04
   - name: bind
     run_list:
       - recipe[bind::default]
@@ -102,9 +106,13 @@ suites:
   - name: blog
     run_list:
       - recipe[blog::default]
+    excludes:
+      - ubuntu-22.04 # Currently Ubuntu 20.04, will move to Debian 12+ when supported
   - name: blogs
     run_list:
       - recipe[blogs::default]
+    includes:
+      - debian-12
     attributes:
       ruby:
         version: 3.3
@@ -114,27 +122,43 @@ suites:
   - name: civicrm
     run_list:
       - recipe[civicrm::default]
+    excludes:
+      - ubuntu-22.04 # Currently Ubuntu 20.04, will move to Debian 12+ when supported
   - name: clamav
     run_list:
       - recipe[clamav::default]
+    excludes:
+      - ubuntu-20.04
   - name: community
     run_list:
       - recipe[community::default]
+    includes:
+      - debian-12
   - name: db-backup
     run_list:
       - recipe[db::backup]
+    excludes:
+      - ubuntu-20.04
   - name: db-base
     run_list:
       - recipe[db::base]
+    excludes:
+      - ubuntu-20.04
   - name: db-master
     run_list:
       - recipe[db::master]
+    excludes:
+      - ubuntu-20.04
   - name: db-slave
     run_list:
       - recipe[db::slave]
+    excludes:
+      - ubuntu-20.04
   - name: dev
     run_list:
       - recipe[dev::default]
+    includes:
+      - debian-12
     attributes:
       postgresql:
         versions:
@@ -167,24 +191,34 @@ suites:
   - name: dmca
     run_list:
       - recipe[dmca::default]
+    includes:
+      - debian-12
   - name: dns
     run_list:
       - recipe[dns::default]
+    includes:
+      - debian-12
   - name: docker
     run_list:
       - recipe[docker::default]
+    includes:
+      - debian-12
   - name: elasticsearch
     run_list:
       - recipe[elasticsearch::default]
   - name: exim
     run_list:
       - recipe[exim::default]
+    excludes:
+      - ubuntu-20.04
   - name: fail2ban
     run_list:
       - recipe[fail2ban::default]
   - name: foundation-birthday
     run_list:
       - recipe[foundation::birthday]
+    includes:
+      - debian-12
   - name: foundation-board
     run_list:
       - recipe[foundation::board]
@@ -194,15 +228,21 @@ suites:
   - name: foundation-mastodon
     run_list:
       - recipe[foundation::mastodon]
+    includes:
+      - debian-12
   - name: foundation-mwg
     run_list:
       - recipe[foundation::mwg]
   - name: foundation-owg
     run_list:
       - recipe[foundation::owg]
+    excludes:
+      - ubuntu-20.04
   - name: foundation-welcome
     run_list:
       - recipe[foundation::welcome]
+    includes:
+      - debian-12
   - name: foundation-wiki
     run_list:
       - recipe[foundation::wiki]
@@ -229,42 +269,64 @@ suites:
   - name: git-server
     run_list:
       - recipe[git::server]
+    includes:
+      - debian-12
   - name: git-web
     run_list:
       - recipe[git::web]
+    includes:
+      - debian-12
   - name: gps-tile
     run_list:
       - recipe[gps-tile::default]
+    includes:
+      - debian-12
   - name: hardware
     run_list:
       - recipe[hardware::default]
   - name: hot
     run_list:
       - recipe[hot::default]
+    includes:
+      - debian-12
   - name: ideditor
     run_list:
       - recipe[ideditor::default]
+    includes:
+      - debian-12
   - name: imagery-tiler
     run_list:
       - recipe[imagery::tiler]
+    includes:
+      - debian-12
   - name: irc
     run_list:
       - recipe[irc::default]
+    includes:
+      - debian-12
   - name: kibana
     run_list:
       - recipe[kibana::default]
   - name: letsencrypt
     run_list:
       - recipe[letsencrypt::default]
+    includes:
+      - debian-12
   - name: mail
     run_list:
       - role[mail]
+    excludes:
+      - ubuntu-20.04
   - name: mailman
     run_list:
       - recipe[mailman::default]
+    includes:
+      - ubuntu-20.04 # Mailman 2 only supported on Ubuntu 20.04
   - name: matomo
     run_list:
       - recipe[matomo::default]
+    includes:
+      - debian-12
   - name: memcached
     run_list:
       - recipe[memcached::default]
@@ -277,12 +339,18 @@ suites:
   - name: nginx
     run_list:
       - recipe[nginx::default]
+    excludes:
+      - ubuntu-20.04
   - name: nodejs
     run_list:
       - recipe[nodejs::default]
+    excludes:
+      - ubuntu-20.04
   - name: nominatim
     run_list:
       - recipe[nominatim::default]
+    includes:
+      - debian-12
   - name: ntp
     run_list:
       - recipe[ntp::default]
@@ -292,18 +360,28 @@ suites:
   - name: osmosis
     run_list:
       - recipe[osmosis::default]
+    excludes:
+      - ubuntu-20.04
   - name: osqa
     run_list:
       - recipe[osqa::default]
+    includes:
+      - debian-12
   - name: otrs
     run_list:
       - recipe[otrs::default]
+    includes:
+      - debian-12
   - name: overpass
     run_list:
       - recipe[overpass::default]
+    includes:
+      - debian-12
   - name: passenger
     run_list:
       - recipe[passenger::default]
+    excludes:
+      - ubuntu-20.04
   - name: php
     run_list:
       - recipe[php::default]
@@ -316,30 +394,44 @@ suites:
   - name: planet
     run_list:
       - recipe[planet::default]
+    excludes:
+      - ubuntu-20.04
   - name: planet-aws
     run_list:
       - recipe[planet::aws]
+    excludes:
+      - ubuntu-20.04
   - name: planet-current
     run_list:
       - recipe[planet::current]
+    excludes:
+      - ubuntu-20.04
   - name: planet-dump
     run_list:
       - recipe[planet::dump]
+    excludes:
+      - ubuntu-20.04
   - name: planet-notes
     run_list:
       - recipe[planet::notes]
+    excludes:
+      - ubuntu-20.04
     attributes:
       web:
         readonly_database_host: readonly
   - name: planet-replication
     run_list:
       - recipe[planet::replication]
+    excludes:
+      - ubuntu-20.04
     attributes:
       web:
         readonly_database_host: readonly
   - name: postgresql
     run_list:
       - recipe[postgresql::default]
+    excludes:
+      - ubuntu-20.04
     attributes:
       postgresql:
         versions:
@@ -347,6 +439,8 @@ suites:
   - name: prometheus
     run_list:
       - recipe[prometheus::default]
+    excludes:
+      - ubuntu-20.04
     attributes:
       networking:
         interfaces:
@@ -360,39 +454,59 @@ suites:
   - name: prometheus-server
     run_list:
       - recipe[prometheus::server]
+    includes:
+      - debian-12
   - name: python
     run_list:
       - recipe[python::default]
   - name: rsyncd
     run_list:
       - recipe[rsyncd::default]
+    excludes:
+      - ubuntu-20.04
   - name: serverinfo
     run_list:
       - recipe[serverinfo::default]
+    includes:
+      - debian-12
   - name: snmpd
     run_list:
       - recipe[snmpd::default]
+    includes:
+      - debian-12
   - name: spamassassin
     run_list:
       - recipe[spamassassin::default]
+    excludes:
+      - ubuntu-20.04
   - name: ssl
     run_list:
       - recipe[ssl::default]
   - name: stateofthemap-container
     run_list:
       - recipe[stateofthemap::container]
+    includes:
+      - debian-12
   - name: stateofthemap-wordpress
     run_list:
       - recipe[stateofthemap::wordpress]
+    excludes:
+      - ubuntu-22.04 # Currently Ubuntu 20.04, will move to Debian 12+ when supported
   - name: subversion
     run_list:
       - recipe[subversion::default]
+    includes:
+      - debian-12
   - name: supybot
     run_list:
       - recipe[supybot::default]
+    includes:
+      - debian-12
   - name: switch2osm
     run_list:
       - recipe[switch2osm::default]
+    includes:
+      - debian-12
   - name: sysctl
     run_list:
       - recipe[sysctl::default]
@@ -402,6 +516,8 @@ suites:
   - name: taginfo
     run_list:
       - recipe[taginfo::default]
+    includes:
+      - debian-12
     attributes:
       ruby:
         version: 3.3
@@ -411,30 +527,48 @@ suites:
   - name: tile
     run_list:
       - recipe[tile::default]
+    includes:
+      - debian-12
   - name: tilelog
     run_list:
       - recipe[tilelog::default]
+    excludes:
+      - ubuntu-20.04
   - name: tools
     run_list:
       - recipe[tools::default]
   - name: trac
     run_list:
       - recipe[trac::default]
+    includes:
+      - debian-12
   - name: vectortile
     run_list:
       - recipe[vectortile::default]
+    includes:
+      - debian-12
   - name: web-cgimap
     run_list:
       - recipe[web::cgimap]
+    includes:
+      - debian-12
   - name: web-frontend
     run_list:
       - recipe[web::frontend]
+    includes:
+      - debian-12
   - name: web-rails
     run_list:
       - recipe[web::rails]
+    includes:
+      - debian-12
   - name: wiki
     run_list:
       - recipe[wiki::default]
+    includes:
+      - debian-12
   - name: wordpress
     run_list:
       - recipe[wordpress::default]
+    excludes:
+      - ubuntu-22.04 # Currently Ubuntu 20.04, will move to Debian 12+ when supported
